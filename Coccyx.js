@@ -78,6 +78,7 @@ _.extend(Backbone.View.prototype, {
   
   _tearDown: function() {
     if (this.beforeTearDown) this.beforeTearDown();
+    if (Backbone.outback) Backbone.outback.unbind(this);
     this.undelegateEvents();
     this.__parentView = null;
     _(this.eventDispatchers).invoke('off', null, null, this);
