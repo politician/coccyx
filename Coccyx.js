@@ -4,6 +4,8 @@
 //     Coccyx.js may be freely distributed under the MIT license.
 //     http://github.com/onsi/coccyx
 
+/*jshint strict:false */
+
 var Coccyx = {
   enforceContextualBinding: false
 };
@@ -12,12 +14,13 @@ var Coccyx = {
   var originalExtend = Backbone.Model.extend;
   
   var extend = function(protoProps, classProps) {
+    /*jshint evil:true */
     var parent = this;
     if (protoProps.constructorName && !protoProps.hasOwnProperty('constructor')) {
       eval("protoProps.constructor = function " + protoProps.constructorName + " () { parent.apply(this, arguments) };");
     }
     return originalExtend.call(parent, protoProps, classProps);
-  }
+  };
   
   Backbone.Model.extend = Backbone.Collection.extend = Backbone.Router.extend = Backbone.View.extend = extend;
   
@@ -25,9 +28,13 @@ var Coccyx = {
 
   Backbone.Events.on = function(events, callback, context) {
     originalOn.apply(this, arguments);
-    if (Coccyx.enforceContextualBinding && !context) throw "Coccyx: Backbone event binding attempted without a context."
-    if (context && context.registerEventDispatcher) context.registerEventDispatcher(this);
-  }
+    if (Coccyx.enforceContextualBinding && !context) {
+      throw "Coccyx: Backbone event binding attempted without a context.";
+    }
+    if (context && context.registerEventDispatcher) {
+      context.registerEventDispatcher(this);
+    }
+  };
   
   Backbone.Model.prototype.on = Backbone.Collection.prototype.on = Backbone.Router.prototype.on = Backbone.View.prototype.on = Backbone.Events.on;
   Backbone.Model.prototype.bind = Backbone.Collection.prototype.bind = Backbone.Router.prototype.bind = Backbone.View.prototype.bind = Backbone.Events.bind = Backbone.Events.on;
